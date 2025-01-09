@@ -17,7 +17,10 @@ class Solution():
                     cutoff_idx = i
                     break
             
-            # recursive call to the next sub-problem concerning the remaining length
+            # recursive call to the next sub-problem concerning the remaining length leftwards
+            # e.g. in [2,3,1,1,4]: at idx 1 with jump 3, we can reach the end
+            # the next sub-problem becomes [2,3] and at idx 0 with jump 2, we can again reach the end
+            # so the expected ans. is 2 jumps
             return 1 + minMoves(nums[:cutoff_idx+1])
         
         return minMoves(nums)
