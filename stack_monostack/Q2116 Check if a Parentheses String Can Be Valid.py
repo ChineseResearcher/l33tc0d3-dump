@@ -1,3 +1,4 @@
+# stack - medium
 class Solution:
     def canBeValid(self, s: str, locked: str) -> bool:
         # general idea is to take care of the locked ')' then locked '('
