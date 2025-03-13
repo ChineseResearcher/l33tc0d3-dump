@@ -52,12 +52,6 @@ class Solution:
                 if breaks == 0:
                     res = curr[0] + ' ' * spaces 
                 else:
-                    # determine our space count
-                    if spaces % breaks != 0:
-                        sc = int(spaces / breaks) + 1
-                    else:
-                        sc = spaces // breaks
-
                     res = ''
                     for i, w in enumerate(curr):
                         res += w
