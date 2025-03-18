@@ -29,3 +29,8 @@ class Solution:
             ans = max(ans, r-l+1)
 
         return ans
+    
+nums = [1,3,8,48,10]
+nums = [3,1,5,11,13]
+
+Solution().longestNiceSubarray(nums)
