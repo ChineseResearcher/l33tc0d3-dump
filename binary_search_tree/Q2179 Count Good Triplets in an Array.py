@@ -1,3 +1,4 @@
+# bst - hard
 from sortedcontainers import SortedList
 class Solution:
     def goodTriplets(self, nums1, nums2) -> int:
