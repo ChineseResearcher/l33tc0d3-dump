@@ -25,30 +25,40 @@ class Solution:
 
             # p refers to the number of piles to want for the curr. stones[l..r]
             if l == r:
-
+                
+                ## fail check (1)
                 # note that we do not incur merge cost if we want 1 pile from only 1 stone
                 return 0 if p == 1 else float('inf')
 
+            ## fail check (2)
             # also it's impossible to form "p" piles if we have less than "p" stones
             # i.e. the max. piles we can form from "n" stones is "n" piles
             if r-l+1 < p:
-                return float('inf')
+                return float('inf')            
 
             if (l, r, p) in dp:
                 return dp[(l, r, p)]
             
             if p == 1:
+                
+                ## fail check (3)
+                # observe that every time we merge k consecutive stone piles
+                # the length reduces by k-1, we can tell if the current range length would 
+                # result in a final length-1 pile with the following
+                if (r-l) % (k-1) == 0:  
 
-                # compute the one-pile-cost (opc)
-                opc = pfSum[r] - pfSum[l-1] if l > 0 else pfSum[r]
+                    # compute the one-pile-cost (opc)
+                    opc = pfSum[r] - pfSum[l-1] if l > 0 else pfSum[r]
 
-                # the beauty of this transition is that if we are looking at merging
-                # some stones into 1 pile, it is equivalent to finding what's the cost
-                # to convert it to k piles first so that we can merge as 1 pile
+                    # the beauty of this transition is that if we are looking at merging
+                    # some stones into 1 pile, it is equivalent to finding what's the cost
+                    # to convert it to k piles first so that we can merge as 1 pile
 
-                # we have to formulate it this way as we are constrained by the problem
-                # s.t. every merge we do has to respect "k" consecutive stones
-                return recursive_merge(l, r, k) + opc
+                    # we have to formulate it this way as we are constrained by the problem
+                    # s.t. every merge we do has to respect "k" consecutive stones
+                    return recursive_merge(l, r, k) + opc
+
+                return float('inf')
 
             curr_res = float('inf')
             # explore split j s.t. we are dividing the current range into subproblems: 
