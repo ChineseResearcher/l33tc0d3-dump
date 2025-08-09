@@ -1,4 +1,5 @@
 # bit manipulation - medium
+# ver 1 - bitmask state machine
 from typing import List
 class Solution:
     def singleNumber(self, nums: List[int]) -> int:
@@ -38,6 +39,33 @@ class Solution:
             Ones -= 1 << 32
 
         return Ones
+    
+# ver 2 - bit counter
+from typing import List
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        
+        ans = 0
+        # core ideas:
+        # for every i-th bit position, if the total count of set bits
+        # for this position is 3k+1, we say this bit is present in the
+        # unique number that appears once only
+
+        for i in range(32):
+
+            cnt = 0
+            for num in nums:
+                if num & (1 << i) != 0:
+                    cnt += 1
+
+            if cnt % 3 == 1:
+                ans |= (1 << i)
+
+        # detect signed bit in case the unique number is -ve
+        if ans & (1 << 31):
+            ans -= 1 << 32
+
+        return ans 
     
 nums = [2,2,3,2]
 nums = [0,1,0,1,0,1,99]
