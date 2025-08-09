@@ -11,17 +11,22 @@ Here's how everything is broken down:
 
 - **`array/`** 📊 — Slicing and dicing arrays like a ninja.  
 - **`backtracking/`** 🔄 — Trying everything till it clicks. All about persistence.  
-- **`binary_search/`** 🔍 — Mastering the art of divide-and-conquer.  
+- **`binary_search/`** 🔍 — Mastering the art of divide-and-conquer. 
+- **`binary_search_tree/`** 🌲 — Keeping order in the forest with search-friendly trees.  
 - **`binary_tree/`** 🌳 — Taming trees one branch at a time.  
 - **`bit_manipulation/`** 🧮 — Playing with bits like a wizard.  
 - **`counting/`** 🔢 — Counting things (and keeping count of progress).  
 - **`dynamic_programming/`** 🧠 — Dynamic problems, dynamic solutions.  
+- **`geometry/`** 📐 — Crunching shapes, angles, and distances like Euclid’s apprentice.  
 - **`graph/`** 🌐 — Navigating networks like a pro.  
 - **`greedy/`** 💰 — Snatching solutions one optimal step at a time.  
 - **`heap/`** 🔥 — Handling heaps of data, top to bottom.  
 - **`linked_list/`** 🔗 — Managing chains like a boss.  
+- **`number_theory/`** 🔢 — Harnessing the power of primes, gcds, and modular magic.  
 - **`prefix_sum/`** ➕ — Summing up the essentials, fast and clean.  
 - **`recursion/`** ♾️ — Solving problems by solving smaller ones.  
+- **`segment_tree/`** 🌲 — Range queries and updates at lightning speed.  
+- **`simulation/`** 🎮 — Bringing scenarios to life, one step at a time.  
 - **`sliding_window/`** 🪟 — Sliding through solutions, one window at a time.  
 - **`sorting/`** 🔄 — Bringing order to chaos, one sort at a time.  
 - **`stack_monostack/`** 🥞 — Stacks and their cooler sibling, the monotonic stack.  
