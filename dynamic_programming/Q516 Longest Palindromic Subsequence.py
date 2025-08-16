@@ -34,12 +34,13 @@ class Solution:
         return dp[0][n-1]
     
 # top-down
+from functools import cache
 class Solution:
     def longestPalindromeSubseq(self, s: str) -> int:
         
         n = len(s)
-        dp = [ [None] * n for _ in range(n) ]
 
+        @cache
         def recursive_form(l, r):
 
             if l == r:
@@ -48,21 +49,16 @@ class Solution:
             if l > r:
                 return 0
 
-            if dp[l][r] != None:
-                return dp[l][r]
-
-            curr_res = 0
-            op1 = 0
+            # there's a reason why we need to early return
+            # if s[l] == s[r], it's guaranteed that 2 + subproblem(l+1, r-1)
+            # is better than subproblem(l+1, r) and subproblem(l, r-1)
             if int(s[l] == s[r]):
-                op1 = 2 + recursive_form(l+1, r-1)
-
-            op2 = recursive_form(l+1, r) # skip s[l]
-            op3 = recursive_form(l, r-1) # skip s[r]
-
-            curr_res = max(op1, max(op2, op3))
-            dp[l][r] = curr_res
-            
-            return curr_res
+                return 2 + recursive_form(l+1, r-1)
+            else:
+                skip_l = recursive_form(l+1, r) # skip s[l]
+                skip_r = recursive_form(l, r-1) # skip s[r]
+     
+                return max(skip_l, skip_r)
 
         return recursive_form(0, n-1)
     
