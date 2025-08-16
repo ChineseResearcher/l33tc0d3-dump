@@ -1,4 +1,49 @@
 # dp - hard
+
+# bottom-up
+class Solution:
+    def longestPalindrome(self, word1: str, word2: str) -> int:
+        
+        m, n = len(word1), len(word2)
+        k = m + n
+        jw = word1 + word2
+
+        dp = [[0] * k for _ in range(k)]
+        for i in range(k):
+            # all single char are palindromes
+            dp[i][i] = 1
+
+        ans = 0
+        for seqLen in range(2,k+1):
+            for j in range(k-seqLen+1):
+                
+                l = j
+                r = l + seqLen - 1
+
+                if jw[l] == jw[r]:
+                    dp[l][r] = 2 + (dp[l+1][r-1] if l+1 <= r-1 else 0)
+                    if l < m <= r:
+                        ans = max(ans, dp[l][r])
+
+                else:
+                    dp[l][r] = max(dp[l+1][r], dp[l][r-1])
+                    # why not update answer here too?
+                    # note that even if l < m <= r, because jw[l] != jw[r]
+                    # this is not the case where we have at least one char. 
+                    # contribution from each word
+
+                    # we have no guarantee that dp[l+1][r] & dp[l][r-1]
+                    # were the results of using at least one char. from each word too
+                    # so it's wrong to update ans to max(ans, dp[l][r])
+                    # when left char. != right char.
+
+        # note that dp[0][n-1] does not necessarily yield the correct answer
+        # out answer only gets updated when:
+        # 1) jw[l] == jw[r]
+        # 2) l < m <= r
+        return ans
+
+# top-down
 from functools import cache
 class Solution:
     def longestPalindrome(self, word1: str, word2: str) -> int:
