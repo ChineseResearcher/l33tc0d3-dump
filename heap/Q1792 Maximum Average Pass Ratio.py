@@ -1,10 +1,12 @@
 # heap - medium
+from typing import List
 import heapq
 class Solution:
-    def maxAverageRatio(self, classes, extraStudents):
+    def maxAverageRatio(self, classes: List[List[int]], extraStudents: int) -> float:
+        
         # idea is to always fetch the next class with a most increment in pass ratio
         # if an extra sure pass student is to be assigned to it
-        max_heap = [[-((x[0]+1) / (x[1] + 1) - x[0] / x[1])] + x for x in classes]
+        max_heap = [[-((x[0] + 1) / (x[1] + 1) - x[0] / x[1])] + x for x in classes]
         heapq.heapify(max_heap)
 
         while extraStudents > 0:
@@ -17,7 +19,7 @@ class Solution:
             # mark assignment of student
             extraStudents -= 1
             
-        return sum([x[1]/x[2] for x in max_heap]) / len(max_heap)
+        return sum([x[1] / x[2] for x in max_heap]) / len(max_heap)
     
 classes, extraStudents = [[1,2],[3,5],[2,2]], 2
 classes, extraStudents = [[2,4],[3,9],[4,5],[2,10]], 4
