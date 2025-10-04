@@ -1,13 +1,8 @@
 # graph - hard
+from typing import List
 import heapq 
 class Solution:
-    # it is extremely difficult to come up with the intuition that we should always
-    # process the cell with min. boundary height. And if we try to precompute
-    # maxHeight in cardinal directions like in TRW 1, it would fail on the 3rd TC provided
-    # the key intuition is that by processing the next cell with the min. boundary height,
-    # we are discovering the upper bound for water to trapped up to in an enclosed region
-    # and there may be multiple enclosed regions in a given structure
-    def trapRainWater(self, heightMap) -> int:
+    def trapRainWater(self, heightMap: List[List[int]]) -> int:
         
         m, n = len(heightMap), len(heightMap[0])
 
@@ -26,52 +21,51 @@ class Solution:
                     # mark visited
                     visited.add((r, c))
 
-                    # find boundary height
-                    lh = heightMap[r][c-1] if c-1 >= 0 else float('inf')
-                    rh = heightMap[r][c+1] if c+1 < n else float('inf')
-                    fh = heightMap[r-1][c] if r-1 >= 0 else float('inf')
-                    bh = heightMap[r+1][c] if r+1 < m else float('inf')
+                    # find bounding height of boundary cells
+                    bdh = float('inf')
+                    for dr, dc in [(0,1), (0,-1), (1,0), (-1,0)]:
+                        nr, nc = r + dr, c + dc
 
-                    boundary_height = max(min( min(lh, rh), min(fh, bh) ), heightMap[r][c])
-                    heapq.heappush(min_heap, [boundary_height, r, c])
+                        if 0 <= nr < m and 0 <= nc < n:
+                            bdh = min(bdh, heightMap[nr][nc])
+
+                    bdh = max(bdh, heightMap[r][c])
+                    heapq.heappush(min_heap, [bdh, r, c])
 
         ans = 0
-        # perform BFS over min_heap         
+        # perform BFS over min_heap      
         while min_heap:
 
             bdh, r, c = heapq.heappop(min_heap)
+            # crux of the algorithm: why does a minheap always
+            # give the optimal (smallest) bounding height for a 3-d cell?
+            # By building a minheap based on bounding heights, we ensure
+            # that whenever we visit a new cell, the bounding height we pass down
+            # is the smallest even though this cell might have other bounding heights
 
             # check in cardinal directions for un-visited neighbours
-            if c-1 >= 0 and (r, c-1) not in visited:
-                if bdh > heightMap[r][c-1]:
-                    ans += bdh - heightMap[r][c-1]
-                heapq.heappush(min_heap, [max(bdh, heightMap[r][c-1]), r, c-1])
-                # because we've already accumulated trapped water for this neighbour cell
-                # we need to mark visited to avoid multiple counting
-                visited.add((r, c-1))
+            for dr, dc in [(0,1), (0,-1), (1,0), (-1,0)]:
+                nr, nc = r + dr, c + dc
 
-            if c+1 < n and (r, c+1) not in visited:
-                if bdh > heightMap[r][c+1]:
-                    ans += bdh - heightMap[r][c+1]
-                heapq.heappush(min_heap, [max(bdh, heightMap[r][c+1]), r, c+1])
-                visited.add((r, c+1))
+                if 0 <= nr < m and 0 <= nc < n and (nr, nc) not in visited:
 
-            if r-1 >= 0 and (r-1, c) not in visited:
-                if bdh > heightMap[r-1][c]:
-                    ans += bdh - heightMap[r-1][c]
-                heapq.heappush(min_heap, [max(bdh, heightMap[r-1][c]), r-1, c])
-                visited.add((r-1, c))
+                    if bdh > heightMap[nr][nc]:
+                        ans += bdh - heightMap[nr][nc]
 
-            if r+1 < m and (r+1, c) not in visited:
-                if bdh > heightMap[r+1][c]:
-                    ans += bdh - heightMap[r+1][c]
-                heapq.heappush(min_heap, [max(bdh, heightMap[r+1][c]), r+1, c])
-                visited.add((r+1, c))
+                    # why do we heappush even though the neighbour cell might be taller?
+                    # because the taller neighbour cell can still possibly be a bounding height
+                    # to some cells next to it (say cell A), and it we do not heappush, cells from other
+                    # directions (of cell A) may impose a wrong (higher than actual) bounding height
+                    # and thus causing overestimation of water held at cell A.
+                    heapq.heappush(min_heap, [max(bdh, heightMap[nr][nc]), nr, nc])
+                    visited.add((nr, nc))
 
         return ans
     
 heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]
+heightMap = [[2,2,2],[2,1,2],[2,1,2],[2,1,2]]
 heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]
 heightMap = [[12,13,1,12],[13,4,13,12],[13,8,10,12],[12,13,12,12],[13,13,13,13]]
+heightMap = [[5,8,7,7],[5,2,1,5],[7,1,7,1],[8,9,6,9],[9,8,9,9]]
 
 Solution().trapRainWater(heightMap)
