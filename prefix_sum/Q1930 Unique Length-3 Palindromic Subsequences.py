@@ -1,34 +1,80 @@
 # prefix sum - medium
-from string import ascii_lowercase as asc
+
+# prefix / suffix processing + bitmask solution
 class Solution:
     def countPalindromicSubsequence(self, s: str) -> int:
 
         n = len(s)
+        # build two bitmasks: prefix and suffix
+        # purpose: keep track of appeared letters up to a certain index
+        pf_mask, curr_mask = [], 0
+        for i in range(n):
 
-        # initiate a prefix sum arr storing snapshot freq. dict of alphabets
-        pf_sum = [None] * n
-        # snapshot dict stores the frequency of 26 alphabets at any index i
-        snapshot = {i:0 for i in asc}
+            char_ord = ord(s[i]) - ord('a')
+            curr_mask |= (1 << char_ord)
 
-        for idx, char in enumerate(s):
-            snapshot[char] += 1
-            pf_sum[idx] = snapshot.copy()
+            pf_mask.append(curr_mask)
 
-        ans = set()
-        # notice that length-3 palindrome only has 1 alphabet in the middle
-        # which means we only need to iterate from 1 to n-1 
+        sf_mask, curr_mask = [], 0
+        for i in range(n-1, -1, -1):
+
+            char_ord = ord(s[i]) - ord('a')
+            curr_mask |= (1 << char_ord)
+
+            sf_mask.append(curr_mask)
+
+        sf_mask = sf_mask[::-1]
+
+        unique = [ [0] * 26 for _ in range(26) ] # storing "aba" as "1" -> "0"
+        # explore indices in range [1...n-2] to identify unique palindrome
         for i in range(1, n-1):
 
-            # constant time as number of alphabets is fixed
-            # get the frequency of alphabets before and after index i
-            prev = pf_sum[i-1]
-            next = {char: (pf_sum[-1][char] - pf_sum[i][char]) for char in asc}
+            common = pf_mask[i-1] & sf_mask[i+1]
+            if common == 0:
+                continue
 
-            for char in asc:
-                if prev[char] > 0 and next[char] > 0:
-                    ans.add(char + s[i] + char)
+            if s[i] == s[i-1]:
+                if i-2 >= 0 and s[i-1] == s[i-2]:
+                    continue
 
-        return len(ans)
+            char_ord = ord(s[i]) - ord('a')
+            
+            m = common.bit_length()
+            for j in range(m):
+                if common & (1 << j) != 0:
+                    unique[char_ord][j] = 1
+
+        ans = 0
+        for x in unique:
+            ans += sum(x)
+
+        return ans
+
+# two-pointer solution (much faster)
+class Solution:
+    def countPalindromicSubsequence(self, s: str) -> int:
+
+        n = len(s) 
+        # key ideas:
+        # 1) length-3 palindrome must be in the form of a_a
+        # 2) for every unique character in s, find the leftmost / rightmost 
+        # occurrence index, and if they are indeed apart, it would be forming
+        # valid palindromes with any unique characters in between
+
+        if n <= 2:
+            return 0
+
+        charSet = set(s)
+        
+        ans = 0
+        for ch in charSet:
+            l = s.find(ch)
+            r = s.rfind(ch)
+
+            if l != r:
+                ans += len(set(s[l + 1:r]))
+
+        return ans
 
 s = "adc"
 s = "aabca"
