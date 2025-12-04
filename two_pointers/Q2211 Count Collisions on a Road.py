@@ -1,3 +1,4 @@
+# two pointers - medium
 class Solution:
     def countCollisions(self, directions: str) -> int:
 
