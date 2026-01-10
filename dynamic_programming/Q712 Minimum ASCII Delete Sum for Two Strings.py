@@ -1,10 +1,11 @@
 # dp - medium
 class Solution:
     def minimumDeleteSum(self, s1: str, s2: str) -> int:
+
         m, n = len(s1), len(s2)
         # 2D dp storing the min. ASCII deletion sum for subproblem
         # concerning up to s1[:i] and s2[:j]
-        dp = [ [0] * (n+1) for _ in range(m+1)]
+        dp = [ [0] * (n+1) for _ in range(m+1) ]
 
         # prefill for first row (delete s2) and first col (delete s1)
         for i in range(1, n+1):
@@ -12,7 +13,8 @@ class Solution:
             
         for i in range(1, m+1):
             dp[i][0] = dp[i-1][0] + ord(s1[i-1])
-            
+        
+        fmin = lambda a, b: a if a < b else b
         for i in range(1, m+1):
             for j in range(1, n+1):
                 
@@ -25,7 +27,7 @@ class Solution:
                 # op3: inherit from s1[:i-1] & s2[:j], delete curr s1 char
                 op3 = dp[i-1][j] + ord(s1[i-1])
                 
-                dp[i][j] = min(op1, min(op2, op3))
+                dp[i][j] = fmin(op1, fmin(op2, op3))
                 
         return dp[-1][-1]
     
