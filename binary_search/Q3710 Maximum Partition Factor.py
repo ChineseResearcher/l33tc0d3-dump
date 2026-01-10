@@ -55,10 +55,7 @@ class Solution:
             g = defaultdict(set)
             # explore all pairs to obtain edges
             for i in range(n):
-                for j in range(n):
-
-                    if i == j:
-                        continue
+                for j in range(i+1, n):
 
                     if dist[i][j] < target:
                         g[i].add(j)
@@ -77,13 +74,11 @@ class Solution:
         # in the meantime, compute the distance between every unique pair
         r = 0
         for i in range(n):
-            for j in range(n):
-                if i == j:
-                    continue
+            for j in range(i+1, n):
 
                 dist[i][j] = abs(points[i][0]-points[j][0]) + \
                              abs(points[i][1]-points[j][1])
-                dist[j][i] = dist[i][j]
+                
                 r = fmax(r, dist[i][j])
 
         l = 0
