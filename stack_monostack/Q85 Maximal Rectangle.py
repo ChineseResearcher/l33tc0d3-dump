@@ -1,26 +1,6 @@
-from collections import defaultdict
+from typing import List
 class Solution:
-    def prevSmaller(self, subarr):
-        n = len(subarr)
-        smaller = [-1] * n
-
-        stack = []
-        for i, num in enumerate(subarr):
-
-            if not stack:
-                stack.append(i)
-                continue
-
-            if num > subarr[stack[-1]]:
-                smaller[i] = stack[-1]
-                continue
-
-            # if it's 0, we append its idx
-            stack.append(i)
-
-        return smaller
-
-    def findLargestRec(self, heights):
+    def findLargestRec(self, heights: List[int]) -> int:
         # key algorithm for LC84 Largest Rec. in Histogram
         heights.append(0)
         
@@ -38,27 +18,26 @@ class Solution:
 
         return res
 
-    def maximalRectangle(self, matrix):
+    def maximalRectangle(self, matrix: List[List[str]]):
         
         m, n = len(matrix), len(matrix[0])
-        # for a specific col, store the prev. '0' cell row pos
-        # given a '1' cell in the same col
-        col_wise_smaller = defaultdict(list)
+        # the heights from the top-down perspective can be built from DP
+        dp = [0] * n
 
-        # precompute for col
-        for c in range(n):
-            subarr = [matrix[r][c] for r in range(m)]
-            col_wise_smaller[c] = self.prevSmaller(subarr)
-
+        fmax = lambda a, b: a if a > b else b
         ans = 0
         # the core idea is to treat this like an extension of LC84 Max. rec. in Histogram
         # we scan through every row, and assume that we are dealing with heights standing on curr. row
-        for r in range(m-1, -1, -1):
+        for r in range(m):
 
-            # determine the heights arr. if we are to 
-            # base our heights at row r
-            heights = [r-col_wise_smaller[c][r] if matrix[r][c] == '1' else 0 for c in range(n)]
-            ans = max(ans, self.findLargestRec(heights))
+            # determine the heights arr.
+            for c in range(n):
+                if matrix[r][c] == '1':
+                    dp[c] += 1
+                else:
+                    dp[c] = 0
+
+            ans = fmax(ans, self.findLargestRec(dp))
 
         return ans
     
