@@ -1,35 +1,33 @@
 # heap - medium
 import heapq as hq
 from collections import Counter, deque
-
+from typing import List
 class Solution:
-    def leastInterval(self, tasks, n) -> int:
+    def leastInterval(self, tasks: List[str], n: int) -> int:
 
-        cooldown_queue = deque([])
+        cooldown = deque([])
         # inverting num to build a max heap
-        task_freq = [(-f, t) for t, f in Counter(tasks).items()] 
-        hq.heapify(task_freq)
+        maxheap = [(-f, t) for t, f in Counter(tasks).items()] 
+        hq.heapify(maxheap)
 
         task_cnt, time = 0, 0
-        # debug_queue = []
-
-        while task_freq or cooldown_queue:
+        while maxheap or cooldown:
             
             # querying the cooldown timestamp
-            if cooldown_queue and time == cooldown_queue[0][2]: 
-                f, t, _ = cooldown_queue.popleft()
-                hq.heappush(task_freq, (f, t))
+            if cooldown:
+                if time == cooldown[0][2]: 
+                    f, t, _ = cooldown.popleft()
+                    hq.heappush(maxheap, (f, t))
                 
-            if task_freq:
-                f, t = hq.heappop(task_freq)
-                # debug_queue.append(t)
+            if maxheap:
+                f, t = hq.heappop(maxheap)
                 task_cnt += 1
                 if f + 1 < 0:
-                    cooldown_queue.append((f+1, t, time+n+1))
+                    cooldown.append((f+1, t, time+n+1))
                     
-            elif not task_freq and time < cooldown_queue[0][2]:
-                # debug_queue.append('_')
-                task_cnt += 1
+            else:
+                if time < cooldown[0][2]:
+                    task_cnt += 1
                 
             time += 1 # time always incrementing
 
