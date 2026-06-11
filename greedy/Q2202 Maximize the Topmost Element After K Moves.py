@@ -2,8 +2,12 @@
 from typing import List
 class Solution:
     def maximumTop(self, nums: List[int], k: int) -> int:
-        
+
         n = len(nums)
+        # key idea:
+        # maximize the top element by evaluating reachability 
+        # within k moves using greedy enumeration
+        
         if k == 0:
             return nums[0]
         if k == 1:
@@ -22,8 +26,8 @@ class Solution:
                 if k == idx:
                     ans = num
 
-                choice = idx + 1
-                if k > idx + 1:
+                elif k > idx + 1:
+                    choice = idx + 1
 
                     # it is important to realise that if we are making "choice" popping moves
                     # to inlcude curr. num in removed set, and this move cnt > 1, then we will
@@ -39,11 +43,11 @@ class Solution:
 
         return ans
     
-nums, k = [5,2,2,4,0,6], 4
 nums, k = [2], 1
 nums, k = [18], 3
+nums, k = [0], 1000000000
+nums, k = [5,2,2,4,0,6], 4
 nums, k = [99,95,68,24,18], 69
 nums, k = [73,63,62,16,95,92,93,52,89,36,75,79,67,60,42,93,93,74,94,73,35,86,96], 59
-nums, k = [0], 1000000000
 
 Solution().maximumTop(nums, k)
