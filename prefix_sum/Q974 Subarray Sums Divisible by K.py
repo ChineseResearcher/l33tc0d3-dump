@@ -1,22 +1,27 @@
 # prefix sum - medium
-class Solution(object):
-    def subarraysDivByK(self, nums, k):
-        count = 0
-        prefix_sum = 0
-        prefix_map = {0: 1}  
+from typing import List
+class Solution:
+    def subarraysDivByK(self, nums: List[int], k: int) -> int:
         
-        for num in nums:
-            prefix_sum += num
-            mod = prefix_sum % k
-            if mod in prefix_map:
-                count += prefix_map[mod]
-                prefix_map[mod] += 1
+        # key ideas:
+        # 1) prefix sum + hashmap to store count of prefix sum modulo by k
+        # 2) when a repeated prefix sum mod k is identified, increment by its stored count
+        prefix, pf_sum = {0: 1}, 0
+
+        ans = 0
+        for x in nums:
+            pf_sum += x
+            pf_sum_mod_k = pf_sum % k
+            # identify existing count
+            if pf_sum_mod_k in prefix:
+                ans += prefix[pf_sum_mod_k]
+                prefix[pf_sum_mod_k] += 1
             else:
-                prefix_map[mod] = 1
-        
-        return count
+                prefix[pf_sum_mod_k] = 1
+
+        return ans
     
-nums, k = [4,5,0,-2,-3,1], 5
 nums, k = [5], 9
+nums, k = [4,5,0,-2,-3,1], 5
 
 Solution().subarraysDivByK(nums, k)
