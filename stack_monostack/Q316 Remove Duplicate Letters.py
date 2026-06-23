@@ -1,41 +1,41 @@
-# monotonic stack - medium
+# stack - medium
+from collections import Counter
 class Solution:
     def removeDuplicateLetters(self, s: str) -> str:
-        # Initialize the stack and other necessary data structures
-        stack = []
-        in_stack = set()  # To check if a character is already in the stack
-        char_count = {}  # To store the frequency of each character in the string
 
-        # Count the frequency of each character
-        for char in s:
-            if char in char_count:
-                char_count[char] += 1
-            else:
-                char_count[char] = 1
+        n = len(s)
+        # key ideas:
+        # 1) thinking greedily, as we process from left to right, the question
+        # to ask is: if my curr. char. is equal or smaller than the last char. in stack,
+        # can I remove that char? 
+        # 2) to answer (1) we have to know the suffix frequencies of all distinct chars.
 
-        # Iterate over each character in the string
-        for char in s:
-            # Decrease the count of the current character
-            char_count[char] -= 1
+        c = Counter(s)
+        ans = []         # greedy stack
+        member = set()   # track added members
 
-            # If the character is already in the stack, skip it
-            if char in in_stack:
+        for i in range(n):
+
+            # update suffix freq.
+            if i-1 >= 0:
+                c[s[i-1]] -= 1
+
+            x = s[i]
+            if x in member:
                 continue
 
-            # While the stack is not empty and the top character of the stack is
-            # greater than the current character and the top character of the stack
-            # will appear later in the string, pop the stack
-            while stack and stack[-1] > char and char_count[stack[-1]] > 0:
-                in_stack.remove(stack.pop())
+            while ans and ord(x) < ord(ans[-1]) and c[ans[-1]] > 0:
+                member.discard(ans.pop())
+            ans.append(x)
+            member.add(x) 
 
-            # Add the current character to the stack and mark it as added by adding to set
-            stack.append(char)
-            in_stack.add(char)
-
-        # Join the characters in the stack to form the result string
-        return ''.join(stack)
+        return ''.join(ans)
     
+s = "abacb"
 s = "bcabc"
+s = "bbcaac"
 s = "cbacdcbc"
+s = "cdadabcc"
+s = "leetcode"
 
 Solution().removeDuplicateLetters(s)
