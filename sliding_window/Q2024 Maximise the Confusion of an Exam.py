@@ -1,36 +1,36 @@
 # sliding window - medium
 class Solution:
     def maxConsecutiveAnswers(self, answerKey: str, k: int) -> int:
-        
+
         n = len(answerKey)
-        # define a helper function maxWindow that calculates the maximum number of consecutive
-        # answers for a given character c ('T' or 'F')
-        def maxWindow(c):
+        fmax = lambda a, b: a if a > b else b
+        fmin = lambda a, b: a if a < b else b
+        # key ideas:
+        # 1) use a sliding window to capture all subarrays where min(T, F) <= k
+        # 2) find the largest length among those valid subarrays
 
-            ans = 0
-            replaced = 0 # keep track of number of replacements operated
-            left = 0
-            for right in range(n):
-                if answerKey[right] != c: 
-                    replaced += 1
-                
-                # if k replacements have been exceeded, we want to shift the sliding window
-                # such that the left is to the right of the first replacement
-                if replaced > k:  
-                    while answerKey[left] == c:  
-                        left += 1
-                    left += 1  
-                    replaced -= 1  
+        ans, l, T, F = 0, 0, 0, 0
+        for r in range(n):
 
-                # ans gets updated regardless of exceeding k replacements or not
-                ans = max(ans, right - left + 1) 
+            if answerKey[r] == 'T':
+                T += 1
+            else:
+                F += 1
 
-            return ans
-        
-        return max(maxWindow('T'), maxWindow('F'))
+            while l < r and fmin(T, F) > k:
+                if answerKey[l] == 'T':
+                    T -= 1
+                else:
+                    F -= 1
+                l += 1
+
+            if fmin(T, F) <= k:
+                ans = fmax(ans, r-l+1)
+
+        return ans
     
+answerKey, k = "TFFT", 1
 answerKey, k = "TTFTTFTT", 1
-answerKey, k =  "TFFT", 1
 answerKey, k = "TTFTTFTT", 1
 answerKey, k = "FFTFTTTFFF", 1
 answerKey, k = "FFFTTFTTFT", 3
