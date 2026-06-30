@@ -1,26 +1,23 @@
 # sliding window - medium
+from typing import List
 class Solution:
-    def numSubarrayProductLessThanK(self, nums, k):
-        n = len(nums)
-        l = 0
+    def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
 
-        ans, windowSumProd = 0, 1
+        n = len(nums)
+        l, windowProd, ans = 0, 1, 0
         for r in range(n):
             
-            windowSumProd *= nums[r]
-            while windowSumProd >= k:
-                
-                if l > r:
-                    break
-                    
-                windowSumProd /= nums[l]
+            windowProd *= nums[r]
+            while l < r and windowProd >= k:
+                windowProd //= nums[l]
                 l += 1
-                
-            ans += max(r-l+1, 0)
+            
+            if windowProd < k:
+                ans += (r - l + 1)
 
         return ans
-    
-nums, k = [10,5,2,6], 100
+
 nums, k = [1,2,3], 0
+nums, k = [10,5,2,6], 100
 
 Solution().numSubarrayProductLessThanK(nums, k)
