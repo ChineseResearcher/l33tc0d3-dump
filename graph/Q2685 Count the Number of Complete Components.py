@@ -1,70 +1,51 @@
 # graph - medium
-from collections import defaultdict
-class UnionFind:
-    def __init__(self, n):
-        # Initialize the Union-Find structure with n elements
-        self.parent = list(range(n))  
-        self.rank = [1] * n     
-
-    def find(self, x):
-        # Find with path compression
-        if self.parent[x] != x:
-            self.parent[x] = self.find(self.parent[x])  # Path compression
-        return self.parent[x]
-
-    def union(self, x, y):
-        # Union by rank
-        root_x = self.find(x)
-        root_y = self.find(y)
-
-        if root_x != root_y:
-            if self.rank[root_x] > self.rank[root_y]:
-                self.parent[root_y] = root_x
-            elif self.rank[root_x] < self.rank[root_y]:
-                self.parent[root_x] = root_y
-            else:
-                self.parent[root_y] = root_x
-                self.rank[root_x] += 1  # Increase rank when merging equal-rank trees
-
-    def connected(self, x, y):
-        # Check if two elements are in the same set
-        # Note: this is the key to validating a cycle
-        return self.find(x) == self.find(y)
-
+from typing import Tuple, List
+from collections import deque, defaultdict
 class Solution:
-    def countCompleteComponents(self, n, edges):
-        # construct DSU of size n
-        uf = UnionFind(n)
+    def countCompleteComponents(self, n: int, edges: List[List[int]]) -> int:
 
-        # for all edges, union them as we process
-        for u,v in edges:
-            uf.union(u,v)
+        # key ideas:
+        # 1) BFS discovery of components, track nodeCnt / edgeCnt
+        # 2) validate "completeness“ with formula
 
-        # construct two dicts
-        # first dict stores the set of nodes in a component
-        # second dict stores the count of edges in a component
-        cluster_nodes = defaultdict(set)
-        cluster_edge_cnt = defaultdict(int)
+        g = defaultdict(list)
+        for u, v in edges:
+            g[u].append(v)
+            g[v].append(u)
 
-        for u,v in edges:
+        def bfs(source:int) -> Tuple[set, int]:
+            '''
+            BFS helper to determine the node / edge cnt of curr. component
+            with "source" as the starting node.
+            '''
+            q = deque([source])
 
-            # make sure u, v points to the same cluster parent
-            _, _ = uf.find(u), uf.find(v)
-            parent = uf.parent[u]
+            vNodes, vEdges = set([source]), set()
+            while q:
 
-            cluster_nodes[parent].add(u)
-            cluster_nodes[parent].add(v)
+                curr = q.popleft()
+                for nxt in g[curr]:
+                    a, b = curr, nxt
+                    if a > b: a, b = b, a
+                    vEdges.add((a, b))
 
-            cluster_edge_cnt[parent] += 1
+                    if nxt not in vNodes:
+                        q.append(nxt)
+                        vNodes.add(nxt)
 
-        # for each unique cluster parent (ucp), check if its 
-        # egde cnt = nCk, where k is the number of nodes in this cluster
-        ans = 0
-        for ucp in set(uf.parent):
+            return vNodes, len(vEdges)
 
-            nodesCnt = len(cluster_nodes[ucp])
-            if cluster_edge_cnt[ucp] == nodesCnt * (nodesCnt-1) // 2:
-                ans += 1
+        # global visited node set
+        v, ans = set(), 0
+        for node in range(n):
+            if node not in v:
+                vNodes, edgeCnt = bfs(node)
+                nodeCnt = len(vNodes)
+                # validate
+                if edgeCnt == nodeCnt * (nodeCnt - 1) // 2:
+                    ans += 1
+                # merge visited
+                v |= vNodes
 
         return ans
     
