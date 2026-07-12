@@ -1,49 +1,30 @@
 # simulation - medium
+from typing import List
 class Solution:
-    def spiralMatrixIII(self, rows: int, cols: int, rStart: int, cStart: int):
-        # how do we simulate the spiral moves ?
-        # clockwise movement with regular increments in the max. distance travelled in a given direction
-        travelled_grid = [[rStart, cStart]]
-        hits = 0 # this iterator controls our max. distance and direction
-        currRow, currCol = rStart, cStart
-
-        # exit condition: we have traversed all possible grids
-        while len(travelled_grid) < rows * cols:
-            max_distance = hits // 2 + 1
-            direction = hits % 4 # ranges between [0, 3] for right, down, left, up respectively
-
-            # Note: currRow & currCol gets updated when we exhaust the max_distance in a given direction
-            # move right
-            if direction == 0: 
-                for i in range(1, max_distance + 1):
-                    if 0 <= currRow < rows and 0 <= currCol + i < cols:
-                        travelled_grid.append([currRow, currCol + i])
-                currCol = currCol + i
-                
-            # move down
-            elif direction == 1:
-                for i in range(1, max_distance + 1):
-                    if 0 <= currRow + i < rows and 0 <= currCol < cols:
-                        travelled_grid.append([currRow + i, currCol])
-                currRow = currRow + i
-
-            # move left
-            elif direction == 2:
-                for i in range(1, max_distance + 1):
-                    if 0 <= currRow < rows and 0 <= currCol - i < cols:
-                        travelled_grid.append([currRow, currCol - i])
-                currCol = currCol - i
-
-            # move up
-            elif direction == 3:
-                for i in range(1, max_distance + 1):
-                    if 0 <= currRow - i < rows and 0 <= currCol < cols:
-                        travelled_grid.append([currRow - i, currCol])
-                currRow = currRow - i
-
-            hits += 1
+    def spiralMatrixIII(self, rows: int, cols: int, rStart: int, cStart: int) -> List[List[int]]:
         
-        return travelled_grid
+        T = rows * cols
+        # key ideas:
+        # 1) simulate the spiral moves, with each arm length +1 after every two turns
+        # 2) record the cells that we cross in the order of traversal
+        delta = [(0,1), (1,0), (0,-1), (-1,0)]
+
+        r, c, direction, dist = rStart, cStart, 0, 1
+        ans = [[r, c]]
+        while len(ans) < T:
+            
+            dr, dc = delta[direction]
+            for i in range(1, dist + 1):
+                nr, nc = r + i * dr, c + i * dc
+                if 0 <= nr < rows and 0 <= nc < cols:
+                    ans.append([nr, nc])
+
+            r, c = nr, nc
+            direction = (direction + 1) % 4
+            if direction in [0, 2]:
+                dist += 1
+
+        return ans
     
 rows, cols, rStart, cStart = 5, 6, 1, 4
 rows, cols, rStart, cStart = 1, 4, 0, 0
