@@ -1,47 +1,41 @@
 # dp - medium
+from typing import List
 class Solution:
-    def lenLongestFibSubseq(self, arr):
+    def lenLongestFibSubseq(self, arr: List[int]) -> int:
+        
         n = len(arr)
-        # we are guaranteed a monotonically increasing arr.
-        # and thus every number is also unique
-
-        # construct a dict to store the first previous fib num
+        fmax = lambda a, b: a if a > b else b
+        # key ideas:
+        # 1) construct 2-D dp nested dicts where dp[x][y] represents the length of 
+        # longest fibonacci subsequence in the form [..., y, x-y, x]
         dp = {num: dict() for num in arr}
-        # num_idx = {num: idx for idx, num in enumerate(arr)}
 
         ans = 0
-        # question specifies a fib seq. must be at least of length 3
-        for i in range(2, n):
-            
+        for i in range(2, n):   
             for j in range(i):
+                # complement c is valid if c + arr[j] = arr[i]
+                c = arr[i] - arr[j]
 
-                # query if the complement number is present s.t.:
-                # nums[j] + complement = nums[i], i.e. a fib seq
-                complement = arr[i] - arr[j]
-
-                # searching arr[j] is equivalent to searching its complement
-                if arr[j] >= complement:
+                # avoid searching on repeated pairs
+                if arr[j] >= c:
                     break
 
-                if complement in dp:
-                    
-                    # it is now at least length 3 fib seq
-                    dp[arr[i]][complement] = 3
+                if c in dp:
+                    # recognise [c, arr[j], arr[i]] as the length-3 fib subseq.
+                    dp[arr[i]][c] = 3
 
-                    # explore the last fib. number leading up to complement
-                    # (ABSOLUTELY no idea why this loop is constant time...)
-                    for prevFib, prevLength in dp[complement].items():
-                        if prevFib + complement == arr[i]:
-                            dp[arr[i]][complement] = max(dp[arr[i]][complement], prevLength + 1)
-
-                    # update ans after searching
-                    ans = max(ans, dp[arr[i]][complement]) 
+                    # explore longer fib subseq. formations
+                    if arr[i] - c in dp[c]:
+                        dp[arr[i]][c] = fmax(dp[arr[i]][c], dp[c][arr[i] - c] + 1)
+                        
+                    # track longest subseq.
+                    ans = fmax(ans, dp[arr[i]][c]) 
 
         return ans
     
 arr = [1,2,3,4,5,6,7,8]
 arr = [1,3,7,11,12,14,18]
-arr = [2,4,7,8,9,10,14,15,18,23,32,50]
 arr = [2,5,6,7,8,10,12,17,24,41,65]
+arr = [2,4,7,8,9,10,14,15,18,23,32,50]
 
 Solution().lenLongestFibSubseq(arr)
