@@ -1,4 +1,4 @@
-# counting - medium
+# sorting - medium
 class Solution:
     def groupAnagrams(self, strs: list[str]) -> list[list[str]]:
 
