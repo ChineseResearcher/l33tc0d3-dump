@@ -1,11 +1,9 @@
 # linked list - medium
-# Definition for singly-linked list.
 class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
-        
-# Definition for a binary tree node.
+
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
@@ -13,46 +11,36 @@ class TreeNode:
         self.right = right
 
 class Solution:
-    def dfsFindStart(self, btNode):
+    def isSubPath(self, head: ListNode | None, root: TreeNode | None) -> bool:
         
-        if btNode.val == self.head.val:
-            self.entryPoints.append(btNode)
+        # key ideas:
+        # 1) DFS w/ a state pointing the curr. node in the linked list to be matched
+        # 2) early terminate the DFS when there is a mismatch
+        # 3) as the matched path might start at a non-root node, we
+        # always need to explore the skip option for curr. tree node
 
-        if btNode.left:
-            self.dfsFindStart(btNode.left)
-        if btNode.right:
-            self.dfsFindStart(btNode.right)
-
-    def dfsMatchLL(self, llNode, btNode):   
-        # value checking
-        if llNode.val == btNode.val:
-            if not llNode.next:
-                print('match found')
-                return True # complete ll match found
-            llNode = llNode.next
-
-            leftSearch, rightSearch = False, False
-
-            if btNode.left:
-                leftSearch = self.dfsMatchLL(llNode, btNode.left)
-            if btNode.right:
-                rightSearch = self.dfsMatchLL(llNode, btNode.right)
-
-            # return true if either left or right has true returned
-            return True if (leftSearch or rightSearch) else False
-        
-    def isSubPath(self, head, root) -> bool:
-        self.head, self.root = head, root
-        self.entryPoints = []
-        # locate all nodes in the binary tree (bt) that matches the start of the linked list
-        self.dfsFindStart(root)
-        for ep in self.entryPoints:
-            if self.dfsMatchLL(self.head, ep):
+        def f(tn: TreeNode, ln: ListNode, started: bool) -> bool:
+            
+            valMatch = (ln.val == tn.val)
+            if valMatch and ln.next is None:
                 return True
-        return False
+
+            if tn.left:
+                if not started:
+                    if f(tn.left, ln, started): return True
+                if valMatch:
+                    if f(tn.left, ln.next, True): return True
+
+            if tn.right:
+                if not started:
+                    if f(tn.right, ln, started): return True
+                if valMatch:
+                    if f(tn.right, ln.next, True): return True
+
+            return False
+
+        return f(root, head, False)
     
 head, root = [4,2,8], [1,4,4,None,2,2,None,1,None,6,8,None,None,None,None,1,3]
 head, root = [1,4,2,6], [1,4,4,None,2,2,None,1,None,6,8,None,None,None,None,1,3]
 head, root = [1,4,2,6,8], [1,4,4,None,2,2,None,1,None,6,8,None,None,None,None,1,3]
-head, root = [1,10], [1,None,1,10,1,9]
-head, root = [2,2,1], [2,None,2,None,2,None,1]
