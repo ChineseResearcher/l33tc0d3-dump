@@ -2,7 +2,6 @@
 class Solution:
     def maxSelectedElements(self, nums: list[int]) -> int:
 
-        n = len(nums)
         fmax = lambda a, b: a if a > b else b
         # key ideas:
         # 1) variant of the classic LIS problem
@@ -19,27 +18,21 @@ class Solution:
 
         # length is at least 1
         ans = 1
-        for i in range(n):
-            x = nums[i]
-
-            v0 = 0
-            # assume nums[i] is unchanged
-            if x - 1 in dp_0:
-                v0 = fmax(v0, 1 + dp_0[x - 1])
-            if x - 1 in dp_1:
-                v0 = fmax(v0, 1 + dp_1[x - 1])
-
-            v1 = 0
+        for x in nums:
             # modify nums[i]
             if x + 1 not in dp_1:
                 dp_1[x + 1] = 1
             else:
-                v1 = fmax(v1, 1 + dp_0[x])
+                dp_1[x + 1] = fmax(dp_1[x + 1], 1 + dp_0[x])
             if x in dp_1:
-                v1 = fmax(v1, 1 + dp_1[x])
+                dp_1[x + 1] = fmax(dp_1[x + 1], 1 + dp_1[x])
 
-            dp_0[x] = fmax(dp_0[x], v0)
-            dp_1[x + 1] = fmax(dp_1[x + 1], v1)
+            # assume nums[i] is unchanged
+            if x - 1 in dp_0:
+                dp_0[x] = fmax(dp_0[x], 1 + dp_0[x - 1])
+            if x - 1 in dp_1:
+                dp_0[x] = fmax(dp_0[x], 1 + dp_1[x - 1])
+
             ans = fmax(ans, fmax(dp_0[x], dp_1[x + 1]))
 
         return ans
